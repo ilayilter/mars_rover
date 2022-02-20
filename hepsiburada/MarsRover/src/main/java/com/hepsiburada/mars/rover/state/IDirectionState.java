@@ -1,4 +1,4 @@
-package com.hepsiburada.mars.rover.service.state;
+package com.hepsiburada.mars.rover.state;
 
 import com.hepsiburada.mars.rover.model.Rover;
 

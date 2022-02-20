@@ -1,7 +1,7 @@
 package com.hepsiburada.mars.rover.model;
 
 import com.hepsiburada.mars.rover.enums.Direction;
-import com.hepsiburada.mars.rover.service.state.IDirectionState;
+import com.hepsiburada.mars.rover.state.IDirectionState;
 
 /**
  * Created by Ilay.Ilter on 18/02/2022

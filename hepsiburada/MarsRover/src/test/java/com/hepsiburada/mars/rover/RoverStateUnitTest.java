@@ -2,8 +2,8 @@ package com.hepsiburada.mars.rover;
 
 import com.hepsiburada.mars.rover.enums.Direction;
 import com.hepsiburada.mars.rover.model.Rover;
-import com.hepsiburada.mars.rover.service.state.implementation.EastState;
-import com.hepsiburada.mars.rover.service.state.implementation.NorthState;
+import com.hepsiburada.mars.rover.state.implementation.EastState;
+import com.hepsiburada.mars.rover.state.implementation.NorthState;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -7,12 +7,11 @@ import com.hepsiburada.mars.rover.model.Response;
 import com.hepsiburada.mars.rover.model.Rover;
 import com.hepsiburada.mars.rover.service.IMarsRoverService;
 import com.hepsiburada.mars.rover.service.implementation.MarsRoverService;
-import com.hepsiburada.mars.rover.service.state.implementation.EastState;
-import com.hepsiburada.mars.rover.service.state.implementation.NorthState;
+import com.hepsiburada.mars.rover.state.implementation.EastState;
+import com.hepsiburada.mars.rover.state.implementation.NorthState;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

@@ -1,5 +1,6 @@
 package com.hepsiburada.mars.rover.service.implementation;
 
+import com.hepsiburada.mars.rover.enums.Direction;
 import com.hepsiburada.mars.rover.enums.Instruction;
 import com.hepsiburada.mars.rover.exception.CoordinateException;
 import com.hepsiburada.mars.rover.exception.InputException;
@@ -10,6 +11,11 @@ import com.hepsiburada.mars.rover.model.Rover;
 import com.hepsiburada.mars.rover.service.IMarsRoverService;
 import org.springframework.util.CollectionUtils;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +25,64 @@ import java.util.stream.Stream;
  * Created by Ilay.Ilter on 19/02/2022
  */
 public class MarsRoverService implements IMarsRoverService {
+
+	@Override
+	public Request readRequestFromFile(String filename) throws Exception {
+		Request request = new Request();
+		try(BufferedReader br = new BufferedReader(
+				new FileReader(filename, StandardCharsets.UTF_8))){
+
+			String line;
+			int currentLine = 1;
+			int roverCount = 1;
+
+			while((line = br.readLine()) != null){
+				if(currentLine == 1){
+					String[] marsPosArr = line.split(" ");
+					if(marsPosArr.length == 2){
+						Mars mars = new Mars();
+						Integer marsEndXPos = Integer.valueOf(marsPosArr[0]);
+						Integer marsEndYPos = Integer.valueOf(marsPosArr[1]);
+						mars.setEndX(marsEndXPos);
+						mars.setEndY(marsEndYPos);
+						request.setMars(mars);
+					} else{
+						throw new InputException("request is inconvenient");
+					}
+				} else{
+					String[] roverPosArr = line.split(" ");
+					if(roverPosArr.length == 3){
+						Rover rover = new Rover();
+						rover.setX(Integer.valueOf(roverPosArr[0]));
+						rover.setY(Integer.valueOf(roverPosArr[1]));
+						rover.setDirection(Direction.valueOf(roverPosArr[2]));
+						rover.setState(rover.getDirection().getState());
+						request.getRoverMap().put(roverCount, rover);
+
+						line = br.readLine();
+						List<String> instructionList = new ArrayList<>();
+						for(char ch : line.toCharArray()){
+							String instruction = String.valueOf(ch);
+							instructionList.add(instruction);
+						}
+						request.getInstructionMap().put(roverCount, instructionList);
+						roverCount++;
+					} else{
+						throw new InputException("request is inconvenient");
+					}
+				}
+				currentLine++;
+			}
+			br.close();
+			return request;
+		} catch(IOException e){
+			throw e;
+		} catch(NumberFormatException e){
+			throw new InputException("request is inconvenient");
+		} catch(Exception e){
+			throw e;
+		}
+	}
 
 	@Override
 	public Response discoverPlateau(Request request) {
@@ -45,10 +109,10 @@ public class MarsRoverService implements IMarsRoverService {
 									rover.move();
 									break;
 								default:
-									throw new InputException("instruction is inconvenient ");
+									throw new InputException("instruction is inconvenient");
 							}
 						} else{
-							throw new InputException("instruction is inconvenient ");
+							throw new InputException("instruction is inconvenient");
 						}
 					}
 					if(checkPositionConvenient(request.getMars(), rover)){

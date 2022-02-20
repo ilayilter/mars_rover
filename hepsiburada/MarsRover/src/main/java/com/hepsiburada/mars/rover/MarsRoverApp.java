@@ -23,62 +23,16 @@ import java.util.List;
  */
 public class MarsRoverApp {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 
 		var fileName = "src/main/resources/roverFile";
 
-		try(BufferedReader br = new BufferedReader(
-				new FileReader(fileName, StandardCharsets.UTF_8))){
-
-			String line;
-			int currentLine = 1;
-			int roverCount = 1;
-			Request request = new Request();
-			while((line = br.readLine()) != null){
-				if(currentLine == 1){
-					String[] marsPosArr = line.split(" ");
-					if(marsPosArr.length == 2){
-						Mars mars = new Mars();
-						Integer marsEndXPos = Integer.valueOf(marsPosArr[0]);
-						Integer marsEndYPos = Integer.valueOf(marsPosArr[1]);
-						mars.setEndX(marsEndXPos);
-						mars.setEndY(marsEndYPos);
-						request.setMars(mars);
-					} else{
-						throw new InputException("request is inconvenient");
-					}
-				} else{
-					String[] roverPosArr = line.split(" ");
-					if(roverPosArr.length == 3){
-						Rover rover = new Rover();
-						rover.setX(Integer.valueOf(roverPosArr[0]));
-						rover.setY(Integer.valueOf(roverPosArr[1]));
-						rover.setDirection(Direction.valueOf(roverPosArr[2]));
-						rover.setState(rover.getDirection().getState());
-						request.getRoverMap().put(roverCount, rover);
-
-						line = br.readLine();
-						List<String> instructionList = new ArrayList<>();
-						for(char ch : line.toCharArray()){
-							String instruction = String.valueOf(ch);
-							instructionList.add(instruction);
-						}
-						request.getInstructionMap().put(roverCount, instructionList);
-						roverCount++;
-					} else{
-						throw new InputException("request is inconvenient");
-					}
-				}
-				currentLine++;
-			}
-			br.close();
-
-			IMarsRoverService marsRoverService = new MarsRoverService();
-			Response response = marsRoverService.discoverPlateau(request);
-			for(Rover rover : response.getRoverList()){
-				System.out.println(rover.getCurrentPosition());
-			}
-
+		IMarsRoverService marsRoverService = new MarsRoverService();
+		Request request = marsRoverService.readRequestFromFile(fileName);
+		Response response = marsRoverService.discoverPlateau(request);
+		for(Rover rover : response.getRoverList()){
+			System.out.println(rover.getCurrentPosition());
 		}
 	}
 }
+

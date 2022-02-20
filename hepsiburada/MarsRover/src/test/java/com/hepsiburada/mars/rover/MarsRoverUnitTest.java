@@ -12,6 +12,7 @@ import com.hepsiburada.mars.rover.service.state.implementation.NorthState;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,7 +67,7 @@ public class MarsRoverUnitTest {
 		rover.setDirection(Direction.N);
 		rover.setState(new NorthState());
 
-		List<String> instructionList1 = new ArrayList<>(Arrays.asList("M","M","M","M"));
+		List<String> instructionList1 = new ArrayList<>(Arrays.asList("M", "M", "M", "M"));
 
 		Request request = new Request();
 		request.setMars(mars);
@@ -77,5 +78,52 @@ public class MarsRoverUnitTest {
 		Response response = marsRoverService.discoverPlateau(request);
 		Assert.assertTrue(!response.isSucceed());
 		Assert.assertTrue(response.getMsg().equals("coordinate is inconvenient"));
+	}
+
+	@Test
+	public void givenInconvenientInstruction_thenInputException() {
+		Mars mars = new Mars(5, 5);
+		Rover rover = new Rover();
+		rover.setX(4);
+		rover.setY(2);
+		rover.setDirection(Direction.N);
+		rover.setState(new NorthState());
+
+		List<String> instructionList1 = new ArrayList<>(Arrays.asList("M", "H", "M", "M"));
+
+		Request request = new Request();
+		request.setMars(mars);
+		request.getRoverMap().put(1, rover);
+		request.getInstructionMap().put(1, instructionList1);
+
+		IMarsRoverService marsRoverService = new MarsRoverService();
+		Response response = marsRoverService.discoverPlateau(request);
+		Assert.assertTrue(!response.isSucceed());
+		Assert.assertTrue(response.getMsg().equals("instruction is inconvenient"));
+	}
+
+	@Test
+	public void givenFile_whenRead_thenDiscover() {
+		var fileName = "src/main/resources/roverFile2";
+		IMarsRoverService marsRoverService = new MarsRoverService();
+		try{
+			Request request = marsRoverService.readRequestFromFile(fileName);
+			Response response = marsRoverService.discoverPlateau(request);
+			for(Rover rover : response.getRoverList()){
+				Assert.assertTrue(rover.getCurrentPosition().equals("1 2 S"));
+			}
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	@Test
+	public void givenInconvenientFile_whenRead_thenException() {
+		var fileName = "src/main/resources/roverFileEx";
+		IMarsRoverService marsRoverService = new MarsRoverService();
+		try{
+			Request request = marsRoverService.readRequestFromFile(fileName);
+		} catch(Exception e){
+			Assert.assertTrue(e.getMessage().equals("request is inconvenient"));
+		}
 	}
 }
